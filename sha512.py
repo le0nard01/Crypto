@@ -41,7 +41,9 @@ def encode(string, tipo='str'):
 
         (h0,h1,h2,h3,h4,h5,h6,h7) = [int(i[2:],16) for i in initial_hash_values]
 
-        print(hex(h0),h1,h2,h3,h4,h5,h6,h7)
+        for single_chunk in chunks:
+            (a,b,c,d,e,f,g,h) = [bin(i)[2:] for i in (h0,h1,h2,h3,h4,h5,h6,h7)]
+            (a,b,c,d,e,f,g,h) = [i.zfill(64) for i in (a,b,c,d,e,f,g,h)] # acrescentar 0 para o total de len() = 32
     if tipo=='str':
         bits = [ tobin(ord(x)) for x in string ] # iterar a string passada e encaminhar pra funcao tobin
 

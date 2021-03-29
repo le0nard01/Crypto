@@ -43,7 +43,7 @@ def encode(string,tipo='str'):
 
         for single_chunk in chunks:
             (a,b,c,d,e,f,g,h) = [bin(i)[2:] for i in (h0,h1,h2,h3,h4,h5,h6,h7)]
-            (a,b,c,d,e,f,g,h) = [('0'*32)[0:(32-len(i))]+i for i in (a,b,c,d,e,f,g,h)] # acrescentar 0 para o total de len() = 32
+            (a,b,c,d,e,f,g,h) = [i.zfill(32) for i in (a,b,c,d,e,f,g,h)] # acrescentar 0 para o total de len() = 32
     	
             chunk32 = [ single_chunk[i:i+32] for i in range(0, len(single_chunk), 32) ] #Dividir em chunks de 32
 
@@ -105,3 +105,6 @@ def encode(string,tipo='str'):
     bits += '0'*(64-len(tobin(start_bits_len))) + tobin(start_bits_len) #adiciona o tamanho total no final dos bits e preenche.
 
     return message_Schedule(bits)
+
+if encode('HUDSAIDASUHIJXZIJJIXZIJZKXCLSAPDQW--0-0WOOEWQOOKKKKLLKDASDKSADKSAKDSAKDKSADUI12W2UQNDWQNUJ') == 'afa01dfbd0d7fdca8bbcc98a91f297d28fbb4ac5be31f0109797156db789a52b':
+    print('ok')
