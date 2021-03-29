@@ -32,6 +32,15 @@ def encode(string, tipo='str'):
     def tobin(num): # transformar int em binario e preencher por 8, ou seja, tobin(10), 10 em binario é 1010, ele retornará 00001010.
         return bin(num)[2:].zfill(8)
 
+    def rotate(data,tam): 
+        if type(data) == int:
+            data = bin(data)[2:]
+
+        return data[len(data)-tam:]+data[0:len(data)-tam] # função de rightrotate-bitwise, mover X digitos da direita para esquerda.
+    
+    def shift(data,tam): return ('0'*(tam+1))+bin(int(data,2)>>tam)[2:] # função rightshift-bitwise, igual >>, só que faz a conversão para int antes.
+
+
     def message_Schedule(data):
         if len(data) % 1024 != 0:
             print(f"Data não é particionada em 1024. Tamanho: {len(data)}")
@@ -43,7 +52,19 @@ def encode(string, tipo='str'):
 
         for single_chunk in chunks:
             (a,b,c,d,e,f,g,h) = [bin(i)[2:] for i in (h0,h1,h2,h3,h4,h5,h6,h7)]
-            (a,b,c,d,e,f,g,h) = [i.zfill(64) for i in (a,b,c,d,e,f,g,h)] # acrescentar 0 para o total de len() = 32
+            (a,b,c,d,e,f,g,h) = [i.zfill(64) for i in (a,b,c,d,e,f,g,h)] # acrescentar 0's até ficar com len() = 64
+
+            chunk64 = [ single_chunk[i:i+64] for i in range(0, len(single_chunk), 64)] # Dividir chunks em 64
+            
+            for i in range(0,128-len(chunk64)): chunk64.append('0'*64)
+
+            for i in range(16,80):
+                s0 = int(rotate(chunk64[i-15],1),2) ^ int(rotate(chunk64[i-15],8),2) ^ int(shift(chunk64[i-15],7),2)
+                s1 = int(rotate(chunk64[i-2],19),2) ^ int(rotate(chunk64[i-2],61),2) ^ int(shift(chunk64[i-2],6),2) 
+
+                chunk64[i] = bin((int(chunk64[i-16],2) + s0 + int(chunk64[i-7],2) + s1) % (2**64))[2:]
+                chunk64[i] = chunk64[i].zfill(64)
+            print(chunk64)
     if tipo=='str':
         bits = [ tobin(ord(x)) for x in string ] # iterar a string passada e encaminhar pra funcao tobin
 

@@ -54,7 +54,7 @@ def encode(string,tipo='str'):
                 s1 = int(rotate(chunk32[i-2],17),2) ^ int(rotate(chunk32[i-2],19),2) ^ int(shift(chunk32[i-2],10),2)
                 
                 chunk32[i] = bin((int(chunk32[i-16],2) + s0 + int(chunk32[i-7],2) + s1) % (2**32))[2:]
-                chunk32[i] = ('0'*(32-len(chunk32[i])))+chunk32[i]
+                chunk32[i] = chunk32[i].zfill(32)
 
             for i in range(0,64):   #parte 2 calculo sha256
                 s1 = int(rotate(e,6),2) ^ int(rotate(e,11),2) ^ int(rotate(e,25),2)
