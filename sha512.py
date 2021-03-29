@@ -59,7 +59,7 @@ def encode(string, tipo='str'):
             for i in range(0,128-len(chunk64)): chunk64.append('0'*64)
 
             for i in range(16,80):
-                s0 = int(rotate(chunk64[i-15],1),2) ^ int(rotate(chunk64[i-15],8),2) ^ int(shift(chunk64[i-15],7),2)
+                s0 = int(rotate(chunk64[i-15],1),2) ^ int(rotate(chunk64[i-15],8),2) ^ int(shift(chunk64[i-15],7),2) 
                 s1 = int(rotate(chunk64[i-2],19),2) ^ int(rotate(chunk64[i-2],61),2) ^ int(shift(chunk64[i-2],6),2) 
 
                 chunk64[i] = bin((int(chunk64[i-16],2) + s0 + int(chunk64[i-7],2) + s1) % (2**64))[2:]
