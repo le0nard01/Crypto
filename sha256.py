@@ -23,8 +23,6 @@ def encode(string,tipo='str'):
 
     def shift(data,tam): return ('0'*(tam+1))+bin(int(data,2)>>tam)[2:] # função rightshift-bitwise, igual >>, só que faz a conversão para int antes.
 
-    def s32(b): return (('0'*32)[:32-len(b)]+b) # preencher por 32, ou seja, s32, 10 em binario é 1010, ele retornará 00000000000000000000000000001010. 
-
     def formathash(h): # formatar os hex, para todos hex ter 8 digitos incrementando 0's. E depois junta-los
         final = ''
         for i in h:
@@ -65,14 +63,14 @@ def encode(string,tipo='str'):
                 maj = (int(a,2) & int(b,2)) ^(int(a,2) & int(c,2)) ^ (int(b,2) & int(c,2))
                 temp2 = (s0 + maj) % (2**32)
                 
-                h = s32(bin(int(g,2))[2:])
-                g = s32(bin(int(f,2))[2:])
-                f = s32(bin(int(e,2))[2:])
-                e = s32(bin((int(d,2) + temp1) % (2**32))[2:])
-                d = s32(bin(int(c,2))[2:])
-                c = s32(bin(int(b,2))[2:])
-                b = s32(bin(int(a,2))[2:])
-                a = s32(bin((temp1+temp2) % (2**32))[2:])
+                h = (bin(int(g,2))[2:]).zfill(32)
+                g = (bin(int(f,2))[2:]).zfill(32)
+                f = (bin(int(e,2))[2:]).zfill(32)
+                e = (bin((int(d,2) + temp1) % (2**32))[2:]).zfill(32)
+                d = (bin(int(c,2))[2:]).zfill(32)
+                c = (bin(int(b,2))[2:]).zfill(32)
+                b = (bin(int(a,2))[2:]).zfill(32)
+                a = (bin((temp1+temp2) % (2**32))[2:]).zfill(32)
 
             h0 = (h0 + int(a,2)) % (2**32)
             h1 = (h1 + int(b,2)) % (2**32)

@@ -64,7 +64,24 @@ def encode(string, tipo='str'):
 
                 chunk64[i] = bin((int(chunk64[i-16],2) + s0 + int(chunk64[i-7],2) + s1) % (2**64))[2:]
                 chunk64[i] = chunk64[i].zfill(64)
-            print(chunk64)
+
+            for i in range(0,64):   #parte 2 calculo sha256
+                s1 = int(rotate(e,14),2) ^ int(rotate(e,18),2) ^ int(rotate(e,41),2)
+                ch = (int(e,2) & int(f,2)) ^ ((~int(e,2)) & int(g,2))
+                temp1 = int(h,2) + s1 + ch + int(initial_round_constants[i],16) + int(chunk64[i],2)
+                temp1 = temp1 % (2**64)
+                s0 = int(rotate(a,28),2) ^ int(rotate(a,34),2) ^ int(rotate(a,39),2)
+                maj = (int(a,2) & int(b,2)) ^(int(a,2) & int(c,2)) ^ (int(b,2) & int(c,2))
+                temp2 = (s0 + maj) % (2**64)
+            
+                h = (bin(int(g,2))[2:]).zfill(64)
+                g = (bin(int(f,2))[2:]).zfill(64)
+                f = (bin(int(e,2))[2:]).zfill(64)
+                e = (bin((int(d,2) + temp1) % (2**32))[2:])
+                d = (bin(int(c,2))[2:])
+                c = (bin(int(b,2))[2:])
+                b = (bin(int(a,2))[2:])
+                a = (bin((temp1+temp2) % (2**32))[2:])
     if tipo=='str':
         bits = [ tobin(ord(x)) for x in string ] # iterar a string passada e encaminhar pra funcao tobin
 
