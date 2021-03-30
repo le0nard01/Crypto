@@ -23,13 +23,6 @@ def encode(string,tipo='str'):
 
     def shift(data,tam): return ('0'*(tam+1))+bin(int(data,2)>>tam)[2:] # função rightshift-bitwise, igual >>, só que faz a conversão para int antes.
 
-    def formathash(h): # formatar os hex, para todos hex ter 8 digitos incrementando 0's. E depois junta-los
-        final = ''
-        for i in h:
-            i=i[2:]
-            final += i if len(i) == 8 else ('0'*8)[:8-len(i)]+i
-        return final
-
     def message_Schedule(data):
         if len(data) % 512 != 0:
             print(f"Data não é particionada em 512. Tamanho: {len(data)}")
@@ -82,7 +75,7 @@ def encode(string,tipo='str'):
             h7 = (h7 + int(h,2)) % (2**32)
             
         hashfinal = hex(h0),hex(h1),hex(h2),hex(h3),hex(h4),hex(h5),hex(h6),hex(h7)
-        hashfinal = formathash(hashfinal)
+        return( ''.join([(i[2:]).zfill(8) for i in hashfinal]) )
         return hashfinal
 
     if tipo=='str':
