@@ -40,6 +40,12 @@ def encode(string, tipo='str'):
     
     def shift(data,tam): return ('0'*(tam+1))+bin(int(data,2)>>tam)[2:] # função rightshift-bitwise, igual >>, só que faz a conversão para int antes.
 
+    def formathash(h): # formatar os hex, para todos hex ter 8 digitos incrementando 0's. E depois junta-los
+        final = ''
+        for i in h:
+            i=i[2:]
+            final += i.zfill(16)
+        return final
 
     def message_Schedule(data):
         if len(data) % 1024 != 0:
@@ -56,7 +62,7 @@ def encode(string, tipo='str'):
 
             chunk64 = [ single_chunk[i:i+64] for i in range(0, len(single_chunk), 64)] # Dividir chunks em 64
             
-            for i in range(0,128-len(chunk64)): chunk64.append('0'*64)
+            for i in range(0,80-len(chunk64)): chunk64.append('0'*64)
 
             for i in range(16,80):
                 s0 = int(rotate(chunk64[i-15],1),2) ^ int(rotate(chunk64[i-15],8),2) ^ int(shift(chunk64[i-15],7),2) 
@@ -64,9 +70,9 @@ def encode(string, tipo='str'):
 
                 chunk64[i] = bin((int(chunk64[i-16],2) + s0 + int(chunk64[i-7],2) + s1) % (2**64))[2:]
                 chunk64[i] = chunk64[i].zfill(64)
-
-            for i in range(0,64):   #parte 2 calculo sha256
-                s1 = int(rotate(e,14),2) ^ int(rotate(e,18),2) ^ int(rotate(e,41),2)
+            
+            for i in range(0,80):   #parte 2 calculo sha256
+                s1 = int(rotate(e,14),2) ^ int(rotate(e,18),2) ^ int(rotate(e,41),2) 
                 ch = (int(e,2) & int(f,2)) ^ ((~int(e,2)) & int(g,2))
                 temp1 = int(h,2) + s1 + ch + int(initial_round_constants[i],16) + int(chunk64[i],2)
                 temp1 = temp1 % (2**64)
@@ -77,11 +83,25 @@ def encode(string, tipo='str'):
                 h = (bin(int(g,2))[2:]).zfill(64)
                 g = (bin(int(f,2))[2:]).zfill(64)
                 f = (bin(int(e,2))[2:]).zfill(64)
-                e = (bin((int(d,2) + temp1) % (2**32))[2:])
-                d = (bin(int(c,2))[2:])
-                c = (bin(int(b,2))[2:])
-                b = (bin(int(a,2))[2:])
-                a = (bin((temp1+temp2) % (2**32))[2:])
+                e = (bin((int(d,2) + temp1) % (2**64))[2:]).zfill(64)
+                d = (bin(int(c,2))[2:]).zfill(64)
+                c = (bin(int(b,2))[2:]).zfill(64)
+                b = (bin(int(a,2))[2:]).zfill(64)
+                a = (bin((temp1+temp2) % (2**64))[2:]).zfill(64)
+            
+            h0 = (h0 + int(a,2)) % (2**64)
+            h1 = (h1 + int(b,2)) % (2**64)
+            h2 = (h2 + int(c,2)) % (2**64)
+            h3 = (h3 + int(d,2)) % (2**64)
+            h4 = (h4 + int(e,2)) % (2**64)
+            h5 = (h5 + int(f,2)) % (2**64)
+            h6 = (h6 + int(g,2)) % (2**64)
+            h7 = (h7 + int(h,2)) % (2**64)
+
+        hashfinal = hex(h0),hex(h1),hex(h2),hex(h3),hex(h4),hex(h5),hex(h6),hex(h7)
+
+        return( ''.join([(i[2:]).zfill(16) for i in hashfinal]) )
+
     if tipo=='str':
         bits = [ tobin(ord(x)) for x in string ] # iterar a string passada e encaminhar pra funcao tobin
 
@@ -102,4 +122,4 @@ def encode(string, tipo='str'):
 
     return message_Schedule(bits)
 
-encode('abc')
+print(encode('SDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKA') == '670c73a8896cfdffa33211bfedfb13232fd4aa0e885fd3f2480ecb291d0473f2946c8ed24db9fc9979a81f05979db55f3ed134718fc7ab60ad09caf0cb077ff2')
