@@ -95,7 +95,7 @@ def encode(string, tipo='str'):
                 temp2 = (s0 + maj) % (2**64)
             
                 h = (bin(int(g,2))[2:]).zfill(64)
-                g = (bin(int(f,2))[2:]).zfill(64)
+                g = (bin( (f,2))[2:]).zfill(64)
                 f = (bin(int(e,2))[2:]).zfill(64)
                 e = (bin((int(d,2) + temp1) % (2**64))[2:]).zfill(64)
                 d = (bin(int(c,2))[2:]).zfill(64)
@@ -135,7 +135,5 @@ def encode(string, tipo='str'):
     bits += '0'*(128-len(tobin(start_bits_len))) + tobin(start_bits_len) #adiciona o tamanho total no final dos bits e preenche.
 
     return message_Schedule(bits)
-
-print(encode('abc'))
 
 #print(encode('SDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKASDJISAIJDIJSAJIDSAIJDJISAJIDSAIJDIJSAI93210D0KDSA0K0KD12K0K0D1K0D2K01K0-SAK-DK012KK0-1K-DKDKSAKDASKODSKA') == '670c73a8896cfdffa33211bfedfb13232fd4aa0e885fd3f2480ecb291d0473f2946c8ed24db9fc9979a81f05979db55f3ed134718fc7ab60ad09caf0cb077ff2')
