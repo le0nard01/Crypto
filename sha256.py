@@ -76,7 +76,6 @@ def encode(string,tipo='str'):
             
         hashfinal = hex(h0),hex(h1),hex(h2),hex(h3),hex(h4),hex(h5),hex(h6),hex(h7)
         return( ''.join([(i[2:]).zfill(8) for i in hashfinal]) )
-        return hashfinal
 
     if tipo=='str':
         bits = [ tobin(ord(x)) for x in string ] # iterar a string passada e encaminhar pra funcao tobin

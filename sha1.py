@@ -28,29 +28,30 @@ def encode(string,tipo='str'):
             chunk32 = [ int(single_chunk[i:i+32],2) for i in range(0, len(single_chunk), 32) ] #Dividir em chunks de 32
 
             for i in range(0,80-len(chunk32)): chunk32.append('0'*32) # acrescentar 0 para o total de len() = 32
-
+            
             for i in range(16,80):
-                chunk32[i] = leftrotate(chunk32[i-3] ^ chunk32[i-8] ^ chunk32[i-14] ^ chunk32[i-16], 1)
+                chunk32[i] = leftrotate((chunk32[i-3] ^ chunk32[i-8] ^ chunk32[i-14] ^ chunk32[i-16]), 1)
 
             for i in range(80):
                 if 0 <= i <= 19 :
-                    f = ((b & c) | ((~b) & d)) % (2**32)
+                    f = ((b & c) | ((~b) & d)) 
                     k = 0x5A827999
                 elif 20 <= i <= 39 :
-                    f = (b ^ c ^ d) % (2**32)
+                    f = (b ^ c ^ d)
                     k = 0x6ED9EBA1
                 elif 40 <= i <= 59 :
-                    f = ((b & c) | (b & d) | (c & d) ) % (2**32)
+                    f = ((b & c) | (b & d) | (c & d) )
                     k = 0x8F1BBCDC
                 elif 60 <= i <= 79 :
-                    f = (b ^ c ^ d) % (2**32)
+                    f = (b ^ c ^ d) 
                     k = 0xCA62C1D6
-
-                b = a
+                
+                temp = (leftrotate(a, 5) + f + e + k + chunk32[i]) % (2**32)
+                e = d
                 d = c
-                d = e
-                a = (leftrotate(a, 5) + f + e + k + chunk32[i]) % (2**32)
                 c = leftrotate(b, 30)
+                b = a 
+                a = temp
 
             h0 = (h0 + a) % (2**32)
             h1 = (h1 + b) % (2**32)
@@ -59,7 +60,7 @@ def encode(string,tipo='str'):
             h4 = (h4 + e) % (2**32)
 
         hashfinal = hex(h0),hex(h1),hex(h2),hex(h3),hex(h4)
-        return( ''.join([(i[2:]).zfill(8    ) for i in hashfinal]))
+        return( ''.join([(i[2:]).zfill(8) for i in hashfinal]))
 
     if tipo=='str':
         bits = [ tobin(ord(x)) for x in string ] # iterar a string passada e encaminhar pra funcao tobin
@@ -81,4 +82,4 @@ def encode(string,tipo='str'):
 
     return message_Schedule(bits)
 
-print(encode('abc') == 'a9993e364706816aba3e25717850c26c9cd0d89d')
+#print(encode('HUDASIDSAHUDHUASUHDSAUHIDUIAHSUHHDH81H8H218H8D21H8H128H812HDH21H8D21H82D1H8H8D12H8D12H8D28H1H8D219H89D21H8D12H') == '4b240619405e72af76d2bca34f7d507ae1d73105')
