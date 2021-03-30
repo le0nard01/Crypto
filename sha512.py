@@ -46,13 +46,9 @@ def encode(string, tipo='str'):
     def tobin(num): # transformar int em binario e preencher por 8, ou seja, tobin(10), 10 em binario é 1010, ele retornará 00001010.
         return bin(num)[2:].zfill(8)
 
-    def rotate(data,tam): 
-        if type(data) == int:
-            data = bin(data)[2:]
-
-        return data[len(data)-tam:]+data[0:len(data)-tam] # função de rightrotate-bitwise, mover X digitos da direita para esquerda.
-    
-    def shift(data,tam): return ('0'*(tam+1))+bin(int(data,2)>>tam)[2:] # função rightshift-bitwise, igual >>, só que faz a conversão para int antes.
+    def rotate(num, tam):
+        #num = int(num,2)
+        return ((num >> tam) | (num << (64 - tam))) % (2**64)
 
     def formathash(h): # formatar os hex, para todos hex ter 8 digitos incrementando 0's. E depois junta-los
         final = ''
@@ -68,49 +64,48 @@ def encode(string, tipo='str'):
 
         chunks = [ data[i:i+1024] for i in range(0,len(data),1024)] # Divide os chunks em 1024
 
-        (h0,h1,h2,h3,h4,h5,h6,h7) = [int(i[2:],16) for i in initial_hash_values]
+        (h0,h1,h2,h3,h4,h5,h6,h7) = [int(i,16) for i in initial_hash_values]
 
         for single_chunk in chunks:
-            (a,b,c,d,e,f,g,h) = [bin(i)[2:] for i in (h0,h1,h2,h3,h4,h5,h6,h7)]
-            (a,b,c,d,e,f,g,h) = [i.zfill(64) for i in (a,b,c,d,e,f,g,h)] # acrescentar 0's até ficar com len() = 64
-
+            (a,b,c,d,e,f,g,h) = (h0,h1,h2,h3,h4,h5,h6,h7)
             chunk64 = [ single_chunk[i:i+64] for i in range(0, len(single_chunk), 64)] # Dividir chunks em 64
             
             for i in range(0,80-len(chunk64)): chunk64.append('0'*64)
 
             for i in range(16,80):
-                s0 = int(rotate(chunk64[i-15],1),2) ^ int(rotate(chunk64[i-15],8),2) ^ int(shift(chunk64[i-15],7),2) 
-                s1 = int(rotate(chunk64[i-2],19),2) ^ int(rotate(chunk64[i-2],61),2) ^ int(shift(chunk64[i-2],6),2) 
+                
+                s0 = rotate(int(chunk64[i-15],2),1) ^ rotate(int(chunk64[i-15],2),8) ^ int(chunk64[i-15],2) >> 7
+                s1 = rotate(int(chunk64[i-2],2),19) ^ rotate(int(chunk64[i-2],2),61) ^ int(chunk64[i-2],2) >> 6
 
                 chunk64[i] = bin((int(chunk64[i-16],2) + s0 + int(chunk64[i-7],2) + s1) % (2**64))[2:]
                 chunk64[i] = chunk64[i].zfill(64)
             
             for i in range(0,80):   #parte 2 calculo sha256
-                s1 = int(rotate(e,14),2) ^ int(rotate(e,18),2) ^ int(rotate(e,41),2) 
-                ch = (int(e,2) & int(f,2)) ^ ((~int(e,2)) & int(g,2))
-                temp1 = int(h,2) + s1 + ch + int(initial_round_constants[i],16) + int(chunk64[i],2)
+                s1 = rotate(e,14) ^ rotate(e,18) ^ rotate(e,41)
+                ch = (e & f) ^ (~e & g)
+                temp1 = h + s1 + ch + int(initial_round_constants[i],16) + int(chunk64[i],2)
                 temp1 = temp1 % (2**64)
-                s0 = int(rotate(a,28),2) ^ int(rotate(a,34),2) ^ int(rotate(a,39),2)
-                maj = (int(a,2) & int(b,2)) ^(int(a,2) & int(c,2)) ^ (int(b,2) & int(c,2))
+                s0 = rotate(a,28) ^ rotate(a,34) ^ rotate(a,39)
+                maj = (a & b) ^(a & c) ^ (b & c)
                 temp2 = (s0 + maj) % (2**64)
             
-                h = (bin(int(g,2))[2:]).zfill(64)
-                g = (bin( (f,2))[2:]).zfill(64)
-                f = (bin(int(e,2))[2:]).zfill(64)
-                e = (bin((int(d,2) + temp1) % (2**64))[2:]).zfill(64)
-                d = (bin(int(c,2))[2:]).zfill(64)
-                c = (bin(int(b,2))[2:]).zfill(64)
-                b = (bin(int(a,2))[2:]).zfill(64)
-                a = (bin((temp1+temp2) % (2**64))[2:]).zfill(64)
+                h = g
+                g = f 
+                f = e
+                e = (d + temp1) % (2**64)
+                d = c
+                c = b
+                b = a
+                a = (temp1+temp2) % (2**64)
             
-            h0 = (h0 + int(a,2)) % (2**64)
-            h1 = (h1 + int(b,2)) % (2**64)
-            h2 = (h2 + int(c,2)) % (2**64)
-            h3 = (h3 + int(d,2)) % (2**64)
-            h4 = (h4 + int(e,2)) % (2**64)
-            h5 = (h5 + int(f,2)) % (2**64)
-            h6 = (h6 + int(g,2)) % (2**64)
-            h7 = (h7 + int(h,2)) % (2**64)
+            h0 = (h0 + a) % (2**64)
+            h1 = (h1 + b) % (2**64)
+            h2 = (h2 + c) % (2**64)
+            h3 = (h3 + d) % (2**64)
+            h4 = (h4 + e) % (2**64)
+            h5 = (h5 + f) % (2**64)
+            h6 = (h6 + g) % (2**64)
+            h7 = (h7 + h) % (2**64)
 
         hashfinal = hex(h0),hex(h1),hex(h2),hex(h3),hex(h4),hex(h5),hex(h6),hex(h7)
 
