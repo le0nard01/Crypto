@@ -69,7 +69,6 @@ def encode(string, tipo='str'):
             for i in range(0,80-len(chunk64)): chunk64.append('0'*64)
 
             for i in range(16,80):
-                
                 s0 = rotate(int(chunk64[i-15],2),1) ^ rotate(int(chunk64[i-15],2),8) ^ int(chunk64[i-15],2) >> 7
                 s1 = rotate(int(chunk64[i-2],2),19) ^ rotate(int(chunk64[i-2],2),61) ^ int(chunk64[i-2],2) >> 6
 
