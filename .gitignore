@@ -2,3 +2,4 @@ __pycache__
 ripemd160.py
 sha256 copy.py
 *.exe
+Cpp/sha512.cpp
