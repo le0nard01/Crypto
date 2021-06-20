@@ -1,4 +1,3 @@
-// array::begin example
 #include <iostream>
 #include <vector>
 #include <iomanip>
